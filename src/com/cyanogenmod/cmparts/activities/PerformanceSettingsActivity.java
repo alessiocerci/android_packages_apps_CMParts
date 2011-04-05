@@ -13,6 +13,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
 
+import android.util.Log;
+
 import java.io.File;
 
 /**
@@ -44,6 +46,14 @@ public class PerformanceSettingsActivity extends PreferenceActivity implements P
 
     private static final String HEAPSIZE_DEFAULT = "16m";
 
+    private static final String SDCARDCACHESIZE_PREF = "pref_sdcardcachesize";
+
+    private static final String SDCARDCACHESIZE_PROP = "sys.sdcardcache.readsize";
+
+    private static final String SDCARDCACHESIZE_PERSIST_PROP = "persist.sys.sdcardcachereadsize";
+
+    private static final String SDCARDCACHESIZE_DEFAULT = "128KB";
+
     private static final String USE_DITHERING_PREF = "pref_use_dithering";
 
     private static final String USE_DITHERING_PERSIST_PROP = "persist.sys.use_dithering";
@@ -69,6 +79,8 @@ public class PerformanceSettingsActivity extends PreferenceActivity implements P
     private CheckBoxPreference mLockMmsPref;
 
     private ListPreference mHeapsizePref;
+
+    private ListPreference mSdcardcachesizePref;
 
     private AlertDialog alertDialog;
 
@@ -106,6 +118,11 @@ public class PerformanceSettingsActivity extends PreferenceActivity implements P
         mHeapsizePref.setValue(SystemProperties.get(HEAPSIZE_PERSIST_PROP,
                 SystemProperties.get(HEAPSIZE_PROP, HEAPSIZE_DEFAULT)));
         mHeapsizePref.setOnPreferenceChangeListener(this);
+
+	mSdcardcachesizePref = (ListPreference) prefSet.findPreference(SDCARDCACHESIZE_PREF);
+	mSdcardcachesizePref.setValue(SystemProperties.get(SDCARDCACHESIZE_PERSIST_PROP,
+                SystemProperties.get(SDCARDCACHESIZE_PROP, SDCARDCACHESIZE_DEFAULT)));
+        mSdcardcachesizePref.setOnPreferenceChangeListener(this);
 
         mLockHomePref = (CheckBoxPreference) prefSet.findPreference(LOCK_HOME_PREF);
         mLockHomePref.setChecked(Settings.System.getInt(getContentResolver(),
@@ -160,6 +177,17 @@ public class PerformanceSettingsActivity extends PreferenceActivity implements P
         if (preference == mHeapsizePref) {
             if (newValue != null) {
                 SystemProperties.set(HEAPSIZE_PERSIST_PROP, (String)newValue);
+                return true;
+            }
+        }
+
+        if (preference == mSdcardcachesizePref) {
+            if (newValue != null) {
+                SystemProperties.set(SDCARDCACHESIZE_PERSIST_PROP, (String)newValue);
+		//String TAG = "CMParts";
+		//Log.v(TAG, "Setting "+SDCARDCACHESIZE_PERSIST_PROP+" to " + (String)newValue);
+		//Log.v(TAG, "Current persist system prop: " + SystemProperties.get(SDCARDCACHESIZE_PERSIST_PROP));
+		//Log.v(TAG, "Current system prop: " + SystemProperties.get(SDCARDCACHESIZE_PROP));
                 return true;
             }
         }
