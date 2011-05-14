@@ -313,6 +313,10 @@
     <string name="pref_power_prompt_title">Power prompt</string>
     <string name="pref_power_prompt_summary">Change whether there is a prompt after choosing shutdown or reboot</string>
 
+    <!-- UI Settings : Ultra brightness -->
+    <string name="pref_ultra_brightness_title">Ultra brightness</string>
+    <string name="pref_ultra_brightness_summary">Increases the brightness level (may increase battery consumption)</string>
+    
     <!-- UI Settings : Render effect -->
     <string name="pref_render_effect_title">Render effect</string>
     <string name="pref_render_effect_summary">Change what colors are used to draw the screen (potential battery savings)</string>

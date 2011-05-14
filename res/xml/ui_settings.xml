@@ -18,6 +18,12 @@
             android:summary="@string/pref_power_prompt_summary"
             android:defaultValue="true" />
 
+        <!-- Ultra brightness toggle -->
+        <CheckBoxPreference android:key="pref_ultra_brightness"
+            android:title="@string/pref_ultra_brightness_title"
+            android:summary="@string/pref_ultra_brightness_summary"
+            android:defaultValue="false" />
+
         <!-- Render effect -->
         <ListPreference android:key="pref_render_effect" android:dialogTitle="@string/pref_render_effect_title"
             android:title="@string/pref_render_effect_title" android:summary="@string/pref_render_effect_summary"

@@ -19,6 +19,12 @@ import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 
+import android.os.SystemProperties;
+import android.util.Log;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class UIActivity extends PreferenceActivity implements OnPreferenceChangeListener {
 	
 	/* Preference Screens */
@@ -74,6 +80,13 @@ public class UIActivity extends PreferenceActivity implements OnPreferenceChange
 
     private CheckBoxPreference mOverscrollPref;
     private ListPreference mOverscrollWeightPref;
+
+    private static final String ULTRA_BRIGHTNESS = "pref_ultra_brightness";
+    private static final String ULTRABRIGHTNESS_PROP = "sys.ultrabrightness";
+    private static final String ULTRABRIGHTNESS_PERSIST_PROP = "persist.sys.ultrabrightness";
+    private static final int ULTRABRIGHTNESS_DEFAULT = 0;    
+    private static final String TAG = "DisplayActivitySettings";
+    private CheckBoxPreference mUltraBrightnessPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,6 +168,15 @@ public class UIActivity extends PreferenceActivity implements OnPreferenceChange
         int overscrollWeight = Settings.System.getInt(getContentResolver(), Settings.System.OVERSCROLL_WEIGHT, 5);
         mOverscrollWeightPref.setValue(String.valueOf(overscrollWeight));
         mOverscrollWeightPref.setOnPreferenceChangeListener(this);
+        
+        
+        /* Ultra brightness */
+        mUltraBrightnessPref = (CheckBoxPreference) prefSet.findPreference(ULTRA_BRIGHTNESS);
+        if (SystemProperties.getInt(ULTRABRIGHTNESS_PERSIST_PROP, ULTRABRIGHTNESS_DEFAULT) == 0)
+		mUltraBrightnessPref.setChecked(false);
+	else
+		mUltraBrightnessPref.setChecked(true);
+        
     }
 
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -230,7 +252,35 @@ public class UIActivity extends PreferenceActivity implements OnPreferenceChange
             Settings.System.putInt(getContentResolver(),
                     Settings.System.ALLOW_OVERSCROLL, value ? 1 : 0);
         }
+        
+        if (preference == mUltraBrightnessPref) {
+            value = mUltraBrightnessPref.isChecked();
+            if (value==true) {
+            	SystemProperties.set(ULTRABRIGHTNESS_PERSIST_PROP, "1");
+            	writeOneLine("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/mode", "i2c_pwm");
+            }
+            else {
+            	SystemProperties.set(ULTRABRIGHTNESS_PERSIST_PROP, "0");
+            	writeOneLine("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/mode", "i2c_pwm_als");
+            }
+        }
 
+        return true;
+    }
+    
+    public static boolean writeOneLine(String fname, String value) {
+        try {
+            FileWriter fw = new FileWriter(fname);
+            try {
+                fw.write(value);
+            } finally {
+                fw.close();
+            }
+        } catch (IOException e) {
+            String Error = "Error writing to " + fname + ". Exception: ";
+            Log.e(TAG, Error, e);
+            return false;
+        }
         return true;
     }
     
