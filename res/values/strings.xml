@@ -521,4 +521,6 @@
     <string name="cpu_max_freq_summary">Maximum CPU frequency\nCurrently: %s</string>
     <string name="cpu_set_on_boot">Set on boot</string>
     <string name="cpu_set_on_boot_summary">Restore CPU settings on boot</string>
+    <string name="cpu_undervolt">Undervolt</string>
+    <string name="cpu_undervolt_summary">Underolt the CPU (improves battery life but may cause instability)</string>
 </resources>
